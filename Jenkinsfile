@@ -36,5 +36,15 @@ pipeline {
                 // I removed the duplicate 'agent2' block since it's all on your laptop
             }
         }
+        post {
+        always {
+            echo 'Cleaning up the workspace...'
+            cleanWs() // Deletes the temporary files in Jenkins
+        }
+        success {
+            echo 'Pipeline finished successfully! Deployment is live.'
+        }
+    }
+}
     }
 }
