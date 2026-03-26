@@ -32,20 +32,11 @@ pipeline {
             }
         }
 
-        stage('Deploy to AWS EC2') {
+       stage('Deploy to AWS EC2') {
     steps {
         withCredentials([usernamePassword(credentialsId: 'MyDockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-            // We use the -i flag to point directly to your .pem key
-            // Note: Use double backslashes \\ for Windows paths
-            bat """
-                ssh -o StrictHostKeyChecking=no -i "C:\\Users\\ELCOT\\Downloads\\my-key.pem.pem" ubuntu@13.206.68.57 "
-                    docker login -u %dockerHubUser% -p %dockerHubPassword% &&
-                    docker pull shanmugapriya3442/my-node-app:latest &&
-                    docker stop my-node-container || true &&
-                    docker rm my-node-container || true &&
-                    docker run -d --name my-node-container -p 80:3000 shanmugapriya3442/my-node-app:latest
-                "
-            """
+            // All commands combined into one line to fix the Windows syntax error
+            bat "ssh -o StrictHostKeyChecking=no -i \"C:\\Users\\ELCOT\\Downloads\\my-key.pem.pem\" ubuntu@13.206.68.57 \"docker login -u %dockerHubUser% -p %dockerHubPassword% && docker pull shanmugapriya3442/my-node-app:latest && docker stop my-node-container || true && docker rm my-node-container || true && docker run -d --name my-node-container -p 80:3000 shanmugapriya3442/my-node-app:latest\""
         }
     }
 }
