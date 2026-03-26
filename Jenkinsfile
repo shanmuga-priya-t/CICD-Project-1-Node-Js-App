@@ -1,50 +1,43 @@
 pipeline {
-    agent any
+    agent any 
     stages {
         stage('Code') {
             steps {
-                // Pointing to your personal fork
                 git url: 'https://github.com/shanmuga-priya-t/CICD-Project-1-Node-Js-App.git', branch: 'main' 
             }
         }
-       stage('Build and Test') { 
-    agent any 
-    steps {
-        // Adding --provenance=false and --push=false (default) 
-        // forces a standard image format that Docker Hub likes
-        bat 'docker build --provenance=false --sbom=false -t shanmugapriya3442/my-node-app:latest .'
-    }
-}
-        stage('Push') { 
-            agent any 
+
+        stage('Build and Test') { 
+            steps {
+                // Using flags to ensure standard format for Docker Hub/AWS
+                bat 'docker build --provenance=false --sbom=false -t shanmugapriya3442/my-node-app:latest .'
+            }
+        }
+
+        stage('Push to Docker Hub') { 
             steps {
                 withCredentials([usernamePassword(credentialsId: 'MyDockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                    // Windows batch uses % instead of $ for variables
                     bat "docker login -u %dockerHubUser% -p %dockerHubPassword%"
                     bat 'docker push shanmugapriya3442/my-node-app:latest'
                 }
             }
         }
+
         stage('Deployment') {
-            parallel {
-                stage('Deploy in Local Instance') { 
-                    agent any 
-                    steps {
-                        bat "docker-compose down && docker-compose up -d"
-                    }
-                }
-                // I removed the duplicate 'agent2' block since it's all on your laptop
+            steps {
+                // Simplified: down removes old version, up starts the new one
+                bat "docker-compose down && docker-compose up -d"
             }
         }
-        post {
+    } // End of Stages
+
+    post {
         always {
             echo 'Cleaning up the workspace...'
-            cleanWs() // Deletes the temporary files in Jenkins
+            cleanWs() 
         }
         success {
             echo 'Pipeline finished successfully! Deployment is live.'
         }
     }
-}
-    }
-}
+} // Final closing brace
