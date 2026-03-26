@@ -3,7 +3,7 @@ pipeline {
     stages{
         stage('Code'){
             steps{
-                git url: 'https://github.com/jaydeepdutta95/CICD-Project-1-Node-Js-App.git', branch: 'main' 
+                git url: 'https://github.com/shanmuga-priya-t/CICD-Project-1-Node-Js-App.git', branch: 'main' 
             }
         }
         stage('Build and Test') { 
