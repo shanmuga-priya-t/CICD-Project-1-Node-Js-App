@@ -2,6 +2,6 @@ version: '3.9'
 
 services:
   web:
-    image: 'jaydeep007docker/my-node-app:latest'
+    image: 'shanmugapriya3442/my-node-app:latest'
     ports:
       - "8000:8000"
