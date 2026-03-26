@@ -7,12 +7,12 @@ pipeline {
             }
         }
         stage('Build and Test') { 
-            agent { label 'agent1' 
-            }
-            steps{
-                sh 'docker build . -t jaydeep007docker/my-node-app:latest'
-            }
-        }
+    // This tells it to use the main Jenkins node
+    agent any 
+    steps {
+        sh 'docker build . -t jaydeep007docker/my-node-app:latest'
+    }
+}
         stage('Push') { 
             agent { label 'agent1' 
             }
