@@ -10,7 +10,7 @@ pipeline {
     // This tells it to use the main Jenkins node
     agent any 
     steps {
-        sh 'docker build . -t jaydeep007docker/my-node-app:latest'
+        bat 'docker build . -t jaydeep007docker/my-node-app:latest'
     }
 }
         stage('Push') { 
@@ -18,8 +18,8 @@ pipeline {
             }
             steps{
                 withCredentials([usernamePassword(credentialsId: 'MyDockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-        	     sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                 sh 'docker push jaydeep007docker/my-node-app:latest'
+        	     bat "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                 bat 'docker push jaydeep007docker/my-node-app:latest'
                 }
             }
         }
@@ -28,14 +28,14 @@ pipeline {
             agent { label 'agent1' 
             }
             steps{
-                sh "docker-compose down && docker-compose up -d"
+                bat "docker-compose down && docker-compose up -d"
             }
         }
                   stage('Deploy in agent2'){ 
             agent { label 'agent2' 
             }
             steps{
-                sh "docker-compose down && docker-compose up -d"
+                bat "docker-compose down && docker-compose up -d"
             }
         }
        }
