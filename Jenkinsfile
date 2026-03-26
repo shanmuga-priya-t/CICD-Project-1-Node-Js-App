@@ -9,7 +9,6 @@ pipeline {
 
         stage('Build and Test') { 
             steps {
-                // Using flags to ensure standard format for Docker Hub/AWS
                 bat 'docker build --provenance=false --sbom=false -t shanmugapriya3442/my-node-app:latest .'
             }
         }
@@ -23,13 +22,26 @@ pipeline {
             }
         }
 
-        stage('Deployment') {
+        stage('Deploy to EC2') {
             steps {
-                // Simplified: down removes old version, up starts the new one
-                bat "docker-compose down && docker-compose up -d"
+                // Ensure you have added your .pem key to Jenkins Credentials with ID 'ec2-ssh-key'
+                sshagent(['ec2-ssh-key']) {
+                    withCredentials([usernamePassword(credentialsId: 'MyDockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                        // Replace <EC2_PUBLIC_IP> with your actual AWS Instance IP
+                        bat """
+                            ssh -o StrictHostKeyChecking=no ubuntu@<EC2_PUBLIC_IP> "
+                                sudo docker login -u %dockerHubUser% -p %dockerHubPassword% &&
+                                sudo docker pull shanmugapriya3442/my-node-app:latest &&
+                                sudo docker stop my-node-container || true &&
+                                sudo docker rm my-node-container || true &&
+                                sudo docker run -d --name my-node-container -p 80:3000 shanmugapriya3442/my-node-app:latest
+                            "
+                        """
+                    }
+                }
             }
         }
-    } // End of Stages
+    }
 
     post {
         always {
@@ -37,7 +49,7 @@ pipeline {
             cleanWs() 
         }
         success {
-            echo 'Pipeline finished successfully! Deployment is live.'
+            echo 'Pipeline finished successfully! Your app is live on AWS EC2.'
         }
     }
-} // Final closing brace
+}
