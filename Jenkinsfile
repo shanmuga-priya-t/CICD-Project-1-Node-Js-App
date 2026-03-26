@@ -11,8 +11,7 @@ pipeline {
             agent any 
             steps {
                 // Corrected image name for your Docker Hub
-                bat 'docker build . -t shanmuga-priya-t/my-node-app:latest'
-            }
+bat 'docker build . -t shanmugapriya3442/my-node-app:latest'            }
         }
         stage('Push') { 
             agent any 
@@ -20,7 +19,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'MyDockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                     // Windows batch uses % instead of $ for variables
                     bat "docker login -u %dockerHubUser% -p %dockerHubPassword%"
-                    bat 'docker push shanmuga-priya-t/my-node-app:latest'
+                    bat 'docker push shanmugapriya3442/my-node-app:latest'
                 }
             }
         }
