@@ -7,12 +7,13 @@ pipeline {
                 git url: 'https://github.com/shanmuga-priya-t/CICD-Project-1-Node-Js-App.git', branch: 'main' 
             }
         }
-        stage('Build and Test') { 
-            agent any 
-            steps {
-                // Corrected image name for your Docker Hub
-bat 'docker build . -t shanmugapriya3442/my-node-app:latest'            }
-        }
+       stage('Build and Test') { 
+    agent any 
+    steps {
+        // Adding --provenance=false helps avoid metadata errors on some registries
+        bat 'docker build --provenance=false -t shanmugapriya3442/my-node-app:latest .'
+    }
+}
         stage('Push') { 
             agent any 
             steps {
