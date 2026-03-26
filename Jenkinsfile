@@ -10,7 +10,7 @@ pipeline {
     // This tells it to use the main Jenkins node
     agent any 
     steps {
-        bat 'docker build . -t jaydeep007docker/my-node-app:latest'
+        bat 'docker build . -t shanmuga-priya-t/my-node-app:latest'
     }
 }
         stage('Push') { 
