@@ -1,44 +1,39 @@
 pipeline {
     agent any
-    stages{
-        stage('Code'){
-            steps{
+    stages {
+        stage('Code') {
+            steps {
+                // Pointing to your personal fork
                 git url: 'https://github.com/shanmuga-priya-t/CICD-Project-1-Node-Js-App.git', branch: 'main' 
             }
         }
         stage('Build and Test') { 
-    // This tells it to use the main Jenkins node
-    agent any 
-    steps {
-        bat 'docker build . -t shanmuga-priya-t/my-node-app:latest'
-    }
-}
-        stage('Push') { 
-            agent { label 'agent1' 
+            agent any 
+            steps {
+                // Corrected image name for your Docker Hub
+                bat 'docker build . -t shanmuga-priya-t/my-node-app:latest'
             }
-            steps{
+        }
+        stage('Push') { 
+            agent any 
+            steps {
                 withCredentials([usernamePassword(credentialsId: 'MyDockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-        	     bat "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                 bat 'docker push shanmuga-priya-t/my-node-app:latest'
+                    // Windows batch uses % instead of $ for variables
+                    bat "docker login -u %dockerHubUser% -p %dockerHubPassword%"
+                    bat 'docker push shanmuga-priya-t/my-node-app:latest'
                 }
             }
         }
-        stage ('Deployment') {
-        parallel  {stage('Deploy in agent1') { 
-            agent { label 'agent1' 
-            }
-            steps{
-                bat "docker-compose down && docker-compose up -d"
-            }
-        }
-                  stage('Deploy in agent2'){ 
-            agent { label 'agent2' 
-            }
-            steps{
-                bat "docker-compose down && docker-compose up -d"
+        stage('Deployment') {
+            parallel {
+                stage('Deploy in Local Instance') { 
+                    agent any 
+                    steps {
+                        bat "docker-compose down && docker-compose up -d"
+                    }
+                }
+                // I removed the duplicate 'agent2' block since it's all on your laptop
             }
         }
-       }
-      }
     }
 }
