@@ -19,7 +19,7 @@ pipeline {
             steps{
                 withCredentials([usernamePassword(credentialsId: 'MyDockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
         	     bat "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                 bat 'docker push jaydeep007docker/my-node-app:latest'
+                 bat 'docker push shanmuga-priya-t/my-node-app:latest'
                 }
             }
         }
