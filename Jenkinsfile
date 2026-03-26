@@ -10,8 +10,9 @@ pipeline {
        stage('Build and Test') { 
     agent any 
     steps {
-        // Adding --provenance=false helps avoid metadata errors on some registries
-        bat 'docker build --provenance=false -t shanmugapriya3442/my-node-app:latest .'
+        // Adding --provenance=false and --push=false (default) 
+        // forces a standard image format that Docker Hub likes
+        bat 'docker build --provenance=false --sbom=false -t shanmugapriya3442/my-node-app:latest .'
     }
 }
         stage('Push') { 
